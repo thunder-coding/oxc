@@ -12,7 +12,7 @@
     "d3": "^7.9.0",
     "date-fns": "^4.1.0",
     "dayjs": "^1.11.13",
-    "es-toolkit": "1.42.0",
+    "es-toolkit": "1.40.0",
     "fs-require": "^1.6.0",
     "happy-dom": "^20.0.0",
     "immer": "^11.0.0",
