@@ -128,8 +128,52 @@ function initTsScopeManager() {
   // @ts-expect-error - TODO: Our types don't quite align yet
   tsScopeManager = analyze(ast, analyzeOptions);
 
+  // Fix CatchClause definitions to match eslint-scope behavior
+  fixCatchClauseDefinitions();
+
   // Add globals from configuration and resolve references
   addGlobals();
+}
+
+/**
+ * Fix CatchClause definitions to match eslint-scope behavior.
+ *
+ * typescript-eslint's scope-manager has a bug where for destructuring patterns in catch clauses
+ * (e.g., `catch ([a, b])` or `catch ({ message })`), the definition's `name` property is set to
+ * the entire pattern (ArrayPattern or ObjectPattern) instead of the individual Identifier.
+ *
+ * eslint-scope correctly sets `def.name` to each Identifier within the pattern.
+ * Since ESLint rules expect eslint-scope behavior, we need to patch the definitions.
+ *
+ * @see https://github.com/typescript-eslint/typescript-eslint/issues/XXX
+ */
+function fixCatchClauseDefinitions(): void {
+  debugAssertIsNonNull(tsScopeManager);
+
+  for (const scope of tsScopeManager.scopes) {
+    for (const variable of scope.variables) {
+      const { defs, identifiers } = variable;
+
+      for (let i = 0; i < defs.length; i++) {
+        const def = defs[i];
+
+        // Only fix CatchClause definitions
+        if (def.type !== "CatchClause") continue;
+
+        // Check if the definition's name is a pattern instead of an identifier
+        const nameType = def.name.type;
+        if (nameType === "ArrayPattern" || nameType === "ObjectPattern") {
+          // Replace with the corresponding identifier from the variable's identifiers array.
+          // For destructuring patterns, each identifier in the pattern gets its own variable,
+          // and the variable's identifiers[0] is the correct Identifier node.
+          if (identifiers.length > 0) {
+            // @ts-expect-error - Mutating definition to fix typescript-eslint bug
+            def.name = identifiers[0];
+          }
+        }
+      }
+    }
+  }
 }
 
 /**
