@@ -103,6 +103,15 @@ Rules to investigate (picking one simple case from each, starting with rules wit
 
 ## Findings
 
+### Recent Fix: Inline `/* global */` Comments (2024-12-22)
+
+**Fixed**: Inline global directive comments (`/* global foo */`, `/* globals foo: writable */`) are now
+processed and add globals to the scope manager. This fixed ~20 test failures across multiple rules.
+
+See [INLINE_GLOBAL_COMMENTS.md](./INLINE_GLOBAL_COMMENTS.md) for details.
+
+---
+
 ### `comma-dangle` (2 failures)
 
 **Cause**: Test harness issue - not a real Oxlint bug
@@ -317,17 +326,17 @@ it available for rules that need it (like `unicode-bom`).
 
 **Root cause**: Oxlint's plugin system doesn't process inline `/*eslint rule: config */` comments.
 
-### 7. Inline `/* exported */` and `/* global */` Comments Not Processed
+### 7. Inline `/* exported */` Comments Not Processed
 
 **Symptoms**:
 
 - `/* exported foo */` comment doesn't mark variable as exported
-- `/* global Object: off */` comment doesn't disable global
-- `/* globals X:off */` inline comment not respected
 
-**Affected rules**: `no-useless-assignment`, `prefer-const`, `prefer-object-has-own`, `no-useless-backreference`
+**Affected rules**: `no-useless-assignment`, `prefer-const`
 
-**Root cause**: Oxlint doesn't process inline directive comments that modify scope/globals.
+**Root cause**: Oxlint doesn't process inline `/* exported */` directive comments.
+
+**Note**: Inline `/* global */` and `/* globals */` comments are now processed (fixed 2024-12-22).
 
 ### 8. HTML Comments in Script Mode
 

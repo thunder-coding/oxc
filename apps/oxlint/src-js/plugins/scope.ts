@@ -14,6 +14,7 @@ import type {
   Scope as TSScope,
 } from "@typescript-eslint/scope-manager";
 import type { Writable } from "type-fest";
+import type { Globals } from "./globals.ts";
 import type * as ESTree from "../generated/types.d.ts";
 import type { SetNullable } from "../utils/types.ts";
 
@@ -98,6 +99,13 @@ type Identifier =
 // Created lazily only when needed.
 let tsScopeManager: TSESLintScopeManager | null = null;
 
+// Regex to match `/* global */` or `/* globals */` directive comments.
+// Matches the directive label (global or globals) at the start of the comment.
+const GLOBAL_DIRECTIVE_REGEX = /^(globals?)\s+(.+)$/s;
+
+// Regex to parse individual global entries: `name` or `name: value` or `name:value`
+const GLOBAL_ENTRY_REGEX = /^\s*([a-zA-Z_$][\w$]*)\s*(?::\s*(\S+))?\s*$/;
+
 // Options for TS-ESLint's `analyze` method.
 // `sourceType` property is set before calling `analyze`.
 const analyzeOptions: SetNullable<AnalyzeOptions, "sourceType"> = {
@@ -175,6 +183,13 @@ function addGlobals(): void {
     if (value !== "off") createGlobalVariable(name, globalScope, value === "writable");
   }
 
+  // Parse inline `/* global */` and `/* globals */` directive comments
+  // and create variables for globals defined in them.
+  const inlineGlobals = parseInlineGlobalComments();
+  for (const name in inlineGlobals) {
+    if (inlineGlobals[name] !== "off") createGlobalVariable(name, globalScope);
+  }
+
   // Resolve references from `through`
   (globalScope as Writable<typeof globalScope>).through = globalScope.through.filter((ref) => {
     const { name } = ref.identifier;
@@ -231,6 +246,70 @@ function createGlobalVariable(name: string, globalScope: TSScope, isWritable: bo
 
   globalScope.set.set(name, variable);
   globalScope.variables.push(variable);
+}
+
+/**
+ * Parse inline `/* global * /` and `/* globals * /` directive comments from source code.
+ *
+ * ESLint processes these comments to add globals that supplement the configuration.
+ * Format: `/* global name1, name2: writable, name3: off * /`
+ *
+ * @returns Object mapping global names to their settings ("readonly", "writable", or "off")
+ */
+function parseInlineGlobalComments(): Globals {
+  debugAssertIsNonNull(ast);
+
+  const result: Globals = {};
+  const { comments } = ast;
+
+  for (let i = 0, len = comments.length; i < len; i++) {
+    const comment = comments[i];
+    // Only process block comments (/* ... */)
+    if (comment.type !== "Block") continue;
+
+    const text = comment.value.trim();
+    const match = GLOBAL_DIRECTIVE_REGEX.exec(text);
+    if (!match) continue;
+
+    // Parse the globals list (everything after "global" or "globals")
+    const globalsText = match[2];
+    const entries = globalsText.split(",");
+
+    for (let j = 0, entriesLen = entries.length; j < entriesLen; j++) {
+      const entryMatch = GLOBAL_ENTRY_REGEX.exec(entries[j]);
+      if (!entryMatch) continue;
+
+      const name = entryMatch[1];
+      const value = normalizeGlobalValue(entryMatch[2]);
+      result[name] = value;
+    }
+  }
+
+  return result;
+}
+
+/**
+ * Normalize a global value from a directive comment.
+ *
+ * @param value - The value string (e.g., "writable", "readonly", "off", "true", "false")
+ * @returns Normalized value ("readonly", "writable", or "off")
+ */
+function normalizeGlobalValue(value: string | undefined): "readonly" | "writable" | "off" {
+  if (value === undefined) return "readonly";
+
+  switch (value) {
+    case "off":
+      return "off";
+    case "true":
+    case "writable":
+    case "writeable":
+      return "writable";
+    case "false":
+    case "readonly":
+    case "readable":
+    default:
+      return "readonly";
+  }
 }
 
 /**

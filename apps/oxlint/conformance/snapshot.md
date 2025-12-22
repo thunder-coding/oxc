@@ -18,8 +18,8 @@
 | Status      | Count | %      |
 | ----------- | ----- | ------ |
 | Total tests | 33090 | 100.0% |
-| Passing     | 32699 |  98.8% |
-| Failing     |   284 |   0.9% |
+| Passing     | 32719 |  98.9% |
+| Failing     |   264 |   0.8% |
 | Skipped     |   107 |   0.3% |
 
 ## Fully Passing Rules
@@ -285,26 +285,26 @@
 
 - `comma-dangle` - 265 / 267 (99.3%)
 - `func-call-spacing` - 137 / 151 (90.7%)
-- `id-blacklist` - 128 / 131 (97.7%)
-- `id-denylist` - 140 / 143 (97.9%)
+- `id-blacklist` - 130 / 131 (99.2%)
+- `id-denylist` - 142 / 143 (99.3%)
 - `no-eval` - 97 / 101 (96.0%)
 - `no-extra-parens` - 1068 / 1072 (99.6%)
 - `no-fallthrough` - 86 / 87 (98.9%)
 - `no-global-assign` - 15 / 18 (83.3%)
-- `no-implicit-globals` - 155 / 245 (63.3%)
+- `no-implicit-globals` - 162 / 245 (66.1%)
 - `no-invalid-this` - 520 / 562 (92.5%)
 - `no-irregular-whitespace` - 279 / 280 (99.6%)
 - `no-lone-blocks` - 49 / 50 (98.0%)
 - `no-multiple-empty-lines` - 45 / 46 (97.8%)
 - `no-native-reassign` - 15 / 18 (83.3%)
 - `no-new-wrappers` - 10 / 11 (90.9%)
-- `no-obj-calls` - 101 / 107 (94.4%)
+- `no-obj-calls` - 105 / 107 (98.1%)
 - `no-promise-executor-return` - 123 / 124 (99.2%)
 - `no-redeclare` - 50 / 75 (66.7%)
 - `no-restricted-imports` - 253 / 254 (99.6%)
 - `no-setter-return` - 163 / 164 (99.4%)
 - `no-shadow` - 306 / 308 (99.4%)
-- `no-undef` - 88 / 94 (93.6%)
+- `no-undef` - 93 / 94 (98.9%)
 - `no-unused-expressions` - 120 / 124 (96.8%)
 - `no-unused-vars` - 407 / 436 (93.3%)
 - `no-use-before-define` - 346 / 347 (99.7%)
@@ -832,109 +832,9 @@ RangeError: Invalid column number (column -1 requested).
 
 ### `id-blacklist`
 
-Pass: 128 / 131 (97.7%)
-Fail: 3 / 131 (2.3%)
+Pass: 130 / 131 (99.2%)
+Fail: 1 / 131 (0.8%)
 Skip: 0 / 131 (0.0%)
-
-#### id-blacklist > valid
-
-```js
-/* global myGlobal: readonly */ myGlobal = 5;
-```
-
-```json
-{
-  "options": [
-    "myGlobal"
-  ]
-}
-```
-
-AssertionError [ERR_ASSERTION]: Should have no errors but had 1: [
-  {
-    ruleId: 'rule-to-test/id-blacklist',
-    message: "Identifier 'myGlobal' is restricted.",
-    messageId: 'restricted',
-    severity: 1,
-    nodeType: 'Identifier',
-    line: 1,
-    column: 32,
-    endLine: 1,
-    endColumn: 40,
-    suggestions: null
-  }
-]
-
-1 !== 0
-
-    at assertErrorCountIsCorrect (apps/oxlint/dist/index.js)
-    at assertValidTestCasePasses (apps/oxlint/dist/index.js)
-    at runValidTestCase (apps/oxlint/dist/index.js)
-    at apps/oxlint/dist/index.js
-
-
-#### id-blacklist > invalid
-
-```js
-/* globals myGlobal */ window.myGlobal = 5; foo = myGlobal;
-```
-
-```json
-{
-  "options": [
-    "myGlobal"
-  ],
-  "languageOptions": {
-    "globals": {
-      "window": "readonly"
-    }
-  },
-  "errors": [
-    {
-      "messageId": "restricted",
-      "data": {
-        "name": "myGlobal"
-      },
-      "column": 31
-    }
-  ]
-}
-```
-
-AssertionError [ERR_ASSERTION]: Should have 1 error but had 2: [
-  {
-    ruleId: 'rule-to-test/id-blacklist',
-    message: "Identifier 'myGlobal' is restricted.",
-    messageId: 'restricted',
-    severity: 1,
-    nodeType: 'Identifier',
-    line: 1,
-    column: 30,
-    endLine: 1,
-    endColumn: 38,
-    suggestions: null
-  },
-  {
-    ruleId: 'rule-to-test/id-blacklist',
-    message: "Identifier 'myGlobal' is restricted.",
-    messageId: 'restricted',
-    severity: 1,
-    nodeType: 'Identifier',
-    line: 1,
-    column: 50,
-    endLine: 1,
-    endColumn: 58,
-    suggestions: null
-  }
-]
-
-2 !== 1
-
-    at assertErrorCountIsCorrect (apps/oxlint/dist/index.js)
-    at assertInvalidTestCasePasses (apps/oxlint/dist/index.js)
-    at runInvalidTestCase (apps/oxlint/dist/index.js)
-    at apps/oxlint/dist/index.js
-
 
 #### id-blacklist > invalid
 
@@ -970,109 +870,9 @@ AssertionError [ERR_ASSERTION]: Should have 1 error but had 0: []
 
 ### `id-denylist`
 
-Pass: 140 / 143 (97.9%)
-Fail: 3 / 143 (2.1%)
+Pass: 142 / 143 (99.3%)
+Fail: 1 / 143 (0.7%)
 Skip: 0 / 143 (0.0%)
-
-#### id-denylist > valid
-
-```js
-/* global myGlobal: readonly */ myGlobal = 5;
-```
-
-```json
-{
-  "options": [
-    "myGlobal"
-  ]
-}
-```
-
-AssertionError [ERR_ASSERTION]: Should have no errors but had 1: [
-  {
-    ruleId: 'rule-to-test/id-denylist',
-    message: "Identifier 'myGlobal' is restricted.",
-    messageId: 'restricted',
-    severity: 1,
-    nodeType: 'Identifier',
-    line: 1,
-    column: 32,
-    endLine: 1,
-    endColumn: 40,
-    suggestions: null
-  }
-]
-
-1 !== 0
-
-    at assertErrorCountIsCorrect (apps/oxlint/dist/index.js)
-    at assertValidTestCasePasses (apps/oxlint/dist/index.js)
-    at runValidTestCase (apps/oxlint/dist/index.js)
-    at apps/oxlint/dist/index.js
-
-
-#### id-denylist > invalid
-
-```js
-/* globals myGlobal */ window.myGlobal = 5; foo = myGlobal;
-```
-
-```json
-{
-  "options": [
-    "myGlobal"
-  ],
-  "languageOptions": {
-    "globals": {
-      "window": "readonly"
-    }
-  },
-  "errors": [
-    {
-      "messageId": "restricted",
-      "data": {
-        "name": "myGlobal"
-      },
-      "column": 31
-    }
-  ]
-}
-```
-
-AssertionError [ERR_ASSERTION]: Should have 1 error but had 2: [
-  {
-    ruleId: 'rule-to-test/id-denylist',
-    message: "Identifier 'myGlobal' is restricted.",
-    messageId: 'restricted',
-    severity: 1,
-    nodeType: 'Identifier',
-    line: 1,
-    column: 30,
-    endLine: 1,
-    endColumn: 38,
-    suggestions: null
-  },
-  {
-    ruleId: 'rule-to-test/id-denylist',
-    message: "Identifier 'myGlobal' is restricted.",
-    messageId: 'restricted',
-    severity: 1,
-    nodeType: 'Identifier',
-    line: 1,
-    column: 50,
-    endLine: 1,
-    endColumn: 58,
-    suggestions: null
-  }
-]
-
-2 !== 1
-
-    at assertErrorCountIsCorrect (apps/oxlint/dist/index.js)
-    at assertInvalidTestCasePasses (apps/oxlint/dist/index.js)
-    at runInvalidTestCase (apps/oxlint/dist/index.js)
-    at apps/oxlint/dist/index.js
-
 
 #### id-denylist > invalid
 
@@ -1526,8 +1326,8 @@ AssertionError [ERR_ASSERTION]: Should have 1 error but had 0: []
 
 ### `no-implicit-globals`
 
-Pass: 155 / 245 (63.3%)
-Fail: 90 / 245 (36.7%)
+Pass: 162 / 245 (66.1%)
+Fail: 83 / 245 (33.9%)
 Skip: 0 / 245 (0.0%)
 
 #### no-implicit-globals > valid
@@ -1674,39 +1474,6 @@ AssertionError [ERR_ASSERTION]: Should have no errors but had 1: [
     column: 0,
     endLine: 1,
     endColumn: 17,
-    suggestions: null
-  }
-]
-
-1 !== 0
-
-    at assertErrorCountIsCorrect (apps/oxlint/dist/index.js)
-    at assertValidTestCasePasses (apps/oxlint/dist/index.js)
-    at runValidTestCase (apps/oxlint/dist/index.js)
-    at apps/oxlint/dist/index.js
-
-
-#### no-implicit-globals > valid
-
-```js
-/* global foo: writable*/ foo = bar
-```
-
-```json
-{}
-```
-
-AssertionError [ERR_ASSERTION]: Should have no errors but had 1: [
-  {
-    ruleId: 'rule-to-test/no-implicit-globals',
-    message: 'Global variable leak, declare the variable if it is intended to be local.',
-    messageId: 'globalVariableLeak',
-    severity: 1,
-    nodeType: 'Identifier',
-    line: 1,
-    column: 26,
-    endLine: 1,
-    endColumn: 35,
     suggestions: null
   }
 ]
@@ -1942,39 +1709,6 @@ AssertionError [ERR_ASSERTION]: Should have no errors but had 1: [
     column: 24,
     endLine: 1,
     endColumn: 36,
-    suggestions: null
-  }
-]
-
-1 !== 0
-
-    at assertErrorCountIsCorrect (apps/oxlint/dist/index.js)
-    at assertValidTestCasePasses (apps/oxlint/dist/index.js)
-    at runValidTestCase (apps/oxlint/dist/index.js)
-    at apps/oxlint/dist/index.js
-
-
-#### no-implicit-globals > valid
-
-```js
-/*global foo:writable*/ foo = 1;
-```
-
-```json
-{}
-```
-
-AssertionError [ERR_ASSERTION]: Should have no errors but had 1: [
-  {
-    ruleId: 'rule-to-test/no-implicit-globals',
-    message: 'Global variable leak, declare the variable if it is intended to be local.',
-    messageId: 'globalVariableLeak',
-    severity: 1,
-    nodeType: 'Identifier',
-    line: 1,
-    column: 24,
-    endLine: 1,
-    endColumn: 31,
     suggestions: null
   }
 ]
@@ -2880,110 +2614,6 @@ AssertionError [ERR_ASSERTION]: Should have no errors but had 3: [
 #### no-implicit-globals > invalid
 
 ```js
-/*global foo:writable*/ foo = bar = 1
-```
-
-```json
-{
-  "errors": [
-    {
-      "message": "Global variable leak, declare the variable if it is intended to be local.",
-      "column": 31
-    }
-  ]
-}
-```
-
-AssertionError [ERR_ASSERTION]: Should have 1 error but had 2: [
-  {
-    ruleId: 'rule-to-test/no-implicit-globals',
-    message: 'Global variable leak, declare the variable if it is intended to be local.',
-    messageId: 'globalVariableLeak',
-    severity: 1,
-    nodeType: 'Identifier',
-    line: 1,
-    column: 24,
-    endLine: 1,
-    endColumn: 37,
-    suggestions: null
-  },
-  {
-    ruleId: 'rule-to-test/no-implicit-globals',
-    message: 'Global variable leak, declare the variable if it is intended to be local.',
-    messageId: 'globalVariableLeak',
-    severity: 1,
-    nodeType: 'Identifier',
-    line: 1,
-    column: 30,
-    endLine: 1,
-    endColumn: 37,
-    suggestions: null
-  }
-]
-
-2 !== 1
-
-    at assertErrorCountIsCorrect (apps/oxlint/dist/index.js)
-    at assertInvalidTestCasePasses (apps/oxlint/dist/index.js)
-    at runInvalidTestCase (apps/oxlint/dist/index.js)
-    at apps/oxlint/dist/index.js
-
-
-#### no-implicit-globals > invalid
-
-```js
-/*global bar:writable*/ foo = bar = 1
-```
-
-```json
-{
-  "errors": [
-    {
-      "message": "Global variable leak, declare the variable if it is intended to be local.",
-      "column": 25
-    }
-  ]
-}
-```
-
-AssertionError [ERR_ASSERTION]: Should have 1 error but had 2: [
-  {
-    ruleId: 'rule-to-test/no-implicit-globals',
-    message: 'Global variable leak, declare the variable if it is intended to be local.',
-    messageId: 'globalVariableLeak',
-    severity: 1,
-    nodeType: 'Identifier',
-    line: 1,
-    column: 24,
-    endLine: 1,
-    endColumn: 37,
-    suggestions: null
-  },
-  {
-    ruleId: 'rule-to-test/no-implicit-globals',
-    message: 'Global variable leak, declare the variable if it is intended to be local.',
-    messageId: 'globalVariableLeak',
-    severity: 1,
-    nodeType: 'Identifier',
-    line: 1,
-    column: 30,
-    endLine: 1,
-    endColumn: 37,
-    suggestions: null
-  }
-]
-
-2 !== 1
-
-    at assertErrorCountIsCorrect (apps/oxlint/dist/index.js)
-    at assertInvalidTestCasePasses (apps/oxlint/dist/index.js)
-    at runInvalidTestCase (apps/oxlint/dist/index.js)
-    at apps/oxlint/dist/index.js
-
-
-#### no-implicit-globals > invalid
-
-```js
 /*global foo:writable*/ var foo = bar = 1;
 ```
 
@@ -3036,167 +2666,6 @@ AssertionError [ERR_ASSERTION]: Should have 1 error but had 2: [
 #### no-implicit-globals > invalid
 
 ```js
-/*global bar:writable*/ var foo = bar = 1;
-```
-
-```json
-{
-  "errors": [
-    {
-      "message": "Unexpected 'var' declaration in the global scope, wrap in an IIFE for a local variable, assign as global property for a global variable."
-    }
-  ]
-}
-```
-
-AssertionError [ERR_ASSERTION]: Should have 1 error but had 2: [
-  {
-    ruleId: 'rule-to-test/no-implicit-globals',
-    message: "Unexpected 'var' declaration in the global scope, wrap in an IIFE for a local variable, assign as global property for a global variable.",
-    messageId: 'globalNonLexicalBinding',
-    severity: 1,
-    nodeType: 'Identifier',
-    line: 1,
-    column: 28,
-    endLine: 1,
-    endColumn: 41,
-    suggestions: null
-  },
-  {
-    ruleId: 'rule-to-test/no-implicit-globals',
-    message: 'Global variable leak, declare the variable if it is intended to be local.',
-    messageId: 'globalVariableLeak',
-    severity: 1,
-    nodeType: 'Identifier',
-    line: 1,
-    column: 34,
-    endLine: 1,
-    endColumn: 41,
-    suggestions: null
-  }
-]
-
-2 !== 1
-
-    at assertErrorCountIsCorrect (apps/oxlint/dist/index.js)
-    at assertInvalidTestCasePasses (apps/oxlint/dist/index.js)
-    at runInvalidTestCase (apps/oxlint/dist/index.js)
-    at apps/oxlint/dist/index.js
-
-
-#### no-implicit-globals > invalid
-
-```js
-/*global foo:writable*/ [foo, bar] = [];
-```
-
-```json
-{
-  "languageOptions": {
-    "ecmaVersion": 2015
-  },
-  "errors": [
-    {
-      "message": "Global variable leak, declare the variable if it is intended to be local.",
-      "column": 25
-    }
-  ]
-}
-```
-
-AssertionError [ERR_ASSERTION]: Should have 1 error but had 2: [
-  {
-    ruleId: 'rule-to-test/no-implicit-globals',
-    message: 'Global variable leak, declare the variable if it is intended to be local.',
-    messageId: 'globalVariableLeak',
-    severity: 1,
-    nodeType: 'ArrayPattern',
-    line: 1,
-    column: 24,
-    endLine: 1,
-    endColumn: 39,
-    suggestions: null
-  },
-  {
-    ruleId: 'rule-to-test/no-implicit-globals',
-    message: 'Global variable leak, declare the variable if it is intended to be local.',
-    messageId: 'globalVariableLeak',
-    severity: 1,
-    nodeType: 'ArrayPattern',
-    line: 1,
-    column: 24,
-    endLine: 1,
-    endColumn: 39,
-    suggestions: null
-  }
-]
-
-2 !== 1
-
-    at assertErrorCountIsCorrect (apps/oxlint/dist/index.js)
-    at assertInvalidTestCasePasses (apps/oxlint/dist/index.js)
-    at runInvalidTestCase (apps/oxlint/dist/index.js)
-    at apps/oxlint/dist/index.js
-
-
-#### no-implicit-globals > invalid
-
-```js
-/*global bar:writable*/ [foo, bar] = [];
-```
-
-```json
-{
-  "languageOptions": {
-    "ecmaVersion": 2015
-  },
-  "errors": [
-    {
-      "message": "Global variable leak, declare the variable if it is intended to be local.",
-      "column": 25
-    }
-  ]
-}
-```
-
-AssertionError [ERR_ASSERTION]: Should have 1 error but had 2: [
-  {
-    ruleId: 'rule-to-test/no-implicit-globals',
-    message: 'Global variable leak, declare the variable if it is intended to be local.',
-    messageId: 'globalVariableLeak',
-    severity: 1,
-    nodeType: 'ArrayPattern',
-    line: 1,
-    column: 24,
-    endLine: 1,
-    endColumn: 39,
-    suggestions: null
-  },
-  {
-    ruleId: 'rule-to-test/no-implicit-globals',
-    message: 'Global variable leak, declare the variable if it is intended to be local.',
-    messageId: 'globalVariableLeak',
-    severity: 1,
-    nodeType: 'ArrayPattern',
-    line: 1,
-    column: 24,
-    endLine: 1,
-    endColumn: 39,
-    suggestions: null
-  }
-]
-
-2 !== 1
-
-    at assertErrorCountIsCorrect (apps/oxlint/dist/index.js)
-    at assertInvalidTestCasePasses (apps/oxlint/dist/index.js)
-    at runInvalidTestCase (apps/oxlint/dist/index.js)
-    at apps/oxlint/dist/index.js
-
-
-#### no-implicit-globals > invalid
-
-```js
 /*global foo:readonly*/ foo = 1
 ```
 
@@ -3210,16 +2679,14 @@ AssertionError [ERR_ASSERTION]: Should have 1 error but had 2: [
 }
 ```
 
-AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
-+ actual - expected
+AssertionError [ERR_ASSERTION]: Should have 1 error but had 0: []
 
-+ 'Global variable leak, declare the variable if it is intended to be local.'
-- 'Unexpected assignment to read-only global variable.'
+0 !== 1
 
-    at assertMessageMatches (apps/oxlint/dist/index.js)
-    at assertInvalidTestCaseMessageIsCorrect (apps/oxlint/dist/index.js)
+    at assertErrorCountIsCorrect (apps/oxlint/dist/index.js)
     at assertInvalidTestCasePasses (apps/oxlint/dist/index.js)
     at runInvalidTestCase (apps/oxlint/dist/index.js)
+    at apps/oxlint/dist/index.js
 
 
 #### no-implicit-globals > invalid
@@ -3238,16 +2705,14 @@ AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
 }
 ```
 
-AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
-+ actual - expected
+AssertionError [ERR_ASSERTION]: Should have 1 error but had 0: []
 
-+ 'Global variable leak, declare the variable if it is intended to be local.'
-- 'Unexpected assignment to read-only global variable.'
+0 !== 1
 
-    at assertMessageMatches (apps/oxlint/dist/index.js)
-    at assertInvalidTestCaseMessageIsCorrect (apps/oxlint/dist/index.js)
+    at assertErrorCountIsCorrect (apps/oxlint/dist/index.js)
     at assertInvalidTestCasePasses (apps/oxlint/dist/index.js)
     at runInvalidTestCase (apps/oxlint/dist/index.js)
+    at apps/oxlint/dist/index.js
 
 
 #### no-implicit-globals > invalid
@@ -3269,16 +2734,14 @@ AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
 }
 ```
 
-AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
-+ actual - expected
+AssertionError [ERR_ASSERTION]: Should have 1 error but had 0: []
 
-+ 'Global variable leak, declare the variable if it is intended to be local.'
-- 'Unexpected assignment to read-only global variable.'
+0 !== 1
 
-    at assertMessageMatches (apps/oxlint/dist/index.js)
-    at assertInvalidTestCaseMessageIsCorrect (apps/oxlint/dist/index.js)
+    at assertErrorCountIsCorrect (apps/oxlint/dist/index.js)
     at assertInvalidTestCasePasses (apps/oxlint/dist/index.js)
     at runInvalidTestCase (apps/oxlint/dist/index.js)
+    at apps/oxlint/dist/index.js
 
 
 #### no-implicit-globals > invalid
@@ -3804,16 +3267,14 @@ AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
 }
 ```
 
-AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
-+ actual - expected
+AssertionError [ERR_ASSERTION]: Should have 2 errors but had 0: []
 
-+ 'Global variable leak, declare the variable if it is intended to be local.'
-- 'Unexpected assignment to read-only global variable.'
+0 !== 2
 
-    at assertMessageMatches (apps/oxlint/dist/index.js)
-    at assertInvalidTestCaseMessageIsCorrect (apps/oxlint/dist/index.js)
+    at assertErrorCountIsCorrect (apps/oxlint/dist/index.js)
     at assertInvalidTestCasePasses (apps/oxlint/dist/index.js)
     at runInvalidTestCase (apps/oxlint/dist/index.js)
+    at apps/oxlint/dist/index.js
 
 
 #### no-implicit-globals > invalid
@@ -3833,34 +3294,9 @@ AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
 }
 ```
 
-AssertionError [ERR_ASSERTION]: Should have 1 error but had 2: [
-  {
-    ruleId: 'rule-to-test/no-implicit-globals',
-    message: 'Global variable leak, declare the variable if it is intended to be local.',
-    messageId: 'globalVariableLeak',
-    severity: 1,
-    nodeType: 'Identifier',
-    line: 1,
-    column: 39,
-    endLine: 1,
-    endColumn: 52,
-    suggestions: null
-  },
-  {
-    ruleId: 'rule-to-test/no-implicit-globals',
-    message: 'Global variable leak, declare the variable if it is intended to be local.',
-    messageId: 'globalVariableLeak',
-    severity: 1,
-    nodeType: 'Identifier',
-    line: 1,
-    column: 45,
-    endLine: 1,
-    endColumn: 52,
-    suggestions: null
-  }
-]
+AssertionError [ERR_ASSERTION]: Should have 1 error but had 0: []
 
-2 !== 1
+0 !== 1
 
     at assertErrorCountIsCorrect (apps/oxlint/dist/index.js)
     at assertInvalidTestCasePasses (apps/oxlint/dist/index.js)
@@ -3885,34 +3321,9 @@ AssertionError [ERR_ASSERTION]: Should have 1 error but had 2: [
 }
 ```
 
-AssertionError [ERR_ASSERTION]: Should have 1 error but had 2: [
-  {
-    ruleId: 'rule-to-test/no-implicit-globals',
-    message: 'Global variable leak, declare the variable if it is intended to be local.',
-    messageId: 'globalVariableLeak',
-    severity: 1,
-    nodeType: 'Identifier',
-    line: 1,
-    column: 39,
-    endLine: 1,
-    endColumn: 52,
-    suggestions: null
-  },
-  {
-    ruleId: 'rule-to-test/no-implicit-globals',
-    message: 'Global variable leak, declare the variable if it is intended to be local.',
-    messageId: 'globalVariableLeak',
-    severity: 1,
-    nodeType: 'Identifier',
-    line: 1,
-    column: 45,
-    endLine: 1,
-    endColumn: 52,
-    suggestions: null
-  }
-]
+AssertionError [ERR_ASSERTION]: Should have 1 error but had 0: []
 
-2 !== 1
+0 !== 1
 
     at assertErrorCountIsCorrect (apps/oxlint/dist/index.js)
     at assertInvalidTestCasePasses (apps/oxlint/dist/index.js)
@@ -3941,16 +3352,27 @@ AssertionError [ERR_ASSERTION]: Should have 1 error but had 2: [
 }
 ```
 
-AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
-+ actual - expected
+AssertionError [ERR_ASSERTION]: Should have 2 errors but had 1: [
+  {
+    ruleId: 'rule-to-test/no-implicit-globals',
+    message: 'Global variable leak, declare the variable if it is intended to be local.',
+    messageId: 'globalVariableLeak',
+    severity: 1,
+    nodeType: 'Identifier',
+    line: 1,
+    column: 31,
+    endLine: 1,
+    endColumn: 38,
+    suggestions: null
+  }
+]
 
-+ 'Global variable leak, declare the variable if it is intended to be local.'
-- 'Unexpected assignment to read-only global variable.'
+1 !== 2
 
-    at assertMessageMatches (apps/oxlint/dist/index.js)
-    at assertInvalidTestCaseMessageIsCorrect (apps/oxlint/dist/index.js)
+    at assertErrorCountIsCorrect (apps/oxlint/dist/index.js)
     at assertInvalidTestCasePasses (apps/oxlint/dist/index.js)
     at runInvalidTestCase (apps/oxlint/dist/index.js)
+    at apps/oxlint/dist/index.js
 
 
 #### no-implicit-globals > invalid
@@ -3974,16 +3396,27 @@ AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
 }
 ```
 
-AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
-+ actual - expected
+AssertionError [ERR_ASSERTION]: Should have 2 errors but had 1: [
+  {
+    ruleId: 'rule-to-test/no-implicit-globals',
+    message: 'Global variable leak, declare the variable if it is intended to be local.',
+    messageId: 'globalVariableLeak',
+    severity: 1,
+    nodeType: 'Identifier',
+    line: 1,
+    column: 25,
+    endLine: 1,
+    endColumn: 38,
+    suggestions: null
+  }
+]
 
-+ 'Global variable leak, declare the variable if it is intended to be local.'
-- 'Unexpected assignment to read-only global variable.'
+1 !== 2
 
-    at assertMessageMatches (apps/oxlint/dist/index.js)
-    at assertInvalidTestCaseMessageIsCorrect (apps/oxlint/dist/index.js)
+    at assertErrorCountIsCorrect (apps/oxlint/dist/index.js)
     at assertInvalidTestCasePasses (apps/oxlint/dist/index.js)
     at runInvalidTestCase (apps/oxlint/dist/index.js)
+    at apps/oxlint/dist/index.js
 
 
 #### no-implicit-globals > invalid
@@ -4006,16 +3439,14 @@ AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
 }
 ```
 
-AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
-+ actual - expected
+AssertionError [ERR_ASSERTION]: Should have 1 error but had 0: []
 
-+ 'Global variable leak, declare the variable if it is intended to be local.'
-- 'Unexpected assignment to read-only global variable.'
+0 !== 1
 
-    at assertMessageMatches (apps/oxlint/dist/index.js)
-    at assertInvalidTestCaseMessageIsCorrect (apps/oxlint/dist/index.js)
+    at assertErrorCountIsCorrect (apps/oxlint/dist/index.js)
     at assertInvalidTestCasePasses (apps/oxlint/dist/index.js)
     at runInvalidTestCase (apps/oxlint/dist/index.js)
+    at apps/oxlint/dist/index.js
 
 
 #### no-implicit-globals > invalid
@@ -4042,16 +3473,14 @@ AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
 }
 ```
 
-AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
-+ actual - expected
+AssertionError [ERR_ASSERTION]: Should have 2 errors but had 0: []
 
-+ 'Global variable leak, declare the variable if it is intended to be local.'
-- 'Unexpected assignment to read-only global variable.'
+0 !== 2
 
-    at assertMessageMatches (apps/oxlint/dist/index.js)
-    at assertInvalidTestCaseMessageIsCorrect (apps/oxlint/dist/index.js)
+    at assertErrorCountIsCorrect (apps/oxlint/dist/index.js)
     at assertInvalidTestCasePasses (apps/oxlint/dist/index.js)
     at runInvalidTestCase (apps/oxlint/dist/index.js)
+    at apps/oxlint/dist/index.js
 
 
 #### no-implicit-globals > invalid
@@ -4074,16 +3503,14 @@ AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
 }
 ```
 
-AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
-+ actual - expected
+AssertionError [ERR_ASSERTION]: Should have 1 error but had 0: []
 
-+ 'Global variable leak, declare the variable if it is intended to be local.'
-- 'Unexpected assignment to read-only global variable.'
+0 !== 1
 
-    at assertMessageMatches (apps/oxlint/dist/index.js)
-    at assertInvalidTestCaseMessageIsCorrect (apps/oxlint/dist/index.js)
+    at assertErrorCountIsCorrect (apps/oxlint/dist/index.js)
     at assertInvalidTestCasePasses (apps/oxlint/dist/index.js)
     at runInvalidTestCase (apps/oxlint/dist/index.js)
+    at apps/oxlint/dist/index.js
 
 
 #### no-implicit-globals > invalid
@@ -4106,16 +3533,14 @@ AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
 }
 ```
 
-AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
-+ actual - expected
+AssertionError [ERR_ASSERTION]: Should have 1 error but had 0: []
 
-+ 'Global variable leak, declare the variable if it is intended to be local.'
-- 'Unexpected assignment to read-only global variable.'
+0 !== 1
 
-    at assertMessageMatches (apps/oxlint/dist/index.js)
-    at assertInvalidTestCaseMessageIsCorrect (apps/oxlint/dist/index.js)
+    at assertErrorCountIsCorrect (apps/oxlint/dist/index.js)
     at assertInvalidTestCasePasses (apps/oxlint/dist/index.js)
     at runInvalidTestCase (apps/oxlint/dist/index.js)
+    at apps/oxlint/dist/index.js
 
 
 #### no-implicit-globals > invalid
@@ -4138,16 +3563,14 @@ AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
 }
 ```
 
-AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
-+ actual - expected
+AssertionError [ERR_ASSERTION]: Should have 1 error but had 0: []
 
-+ 'Global variable leak, declare the variable if it is intended to be local.'
-- 'Unexpected assignment to read-only global variable.'
+0 !== 1
 
-    at assertMessageMatches (apps/oxlint/dist/index.js)
-    at assertInvalidTestCaseMessageIsCorrect (apps/oxlint/dist/index.js)
+    at assertErrorCountIsCorrect (apps/oxlint/dist/index.js)
     at assertInvalidTestCasePasses (apps/oxlint/dist/index.js)
     at runInvalidTestCase (apps/oxlint/dist/index.js)
+    at apps/oxlint/dist/index.js
 
 
 #### no-implicit-globals > invalid
@@ -4174,16 +3597,14 @@ AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
 }
 ```
 
-AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
-+ actual - expected
+AssertionError [ERR_ASSERTION]: Should have 2 errors but had 0: []
 
-+ 'Global variable leak, declare the variable if it is intended to be local.'
-- 'Unexpected assignment to read-only global variable.'
+0 !== 2
 
-    at assertMessageMatches (apps/oxlint/dist/index.js)
-    at assertInvalidTestCaseMessageIsCorrect (apps/oxlint/dist/index.js)
+    at assertErrorCountIsCorrect (apps/oxlint/dist/index.js)
     at assertInvalidTestCasePasses (apps/oxlint/dist/index.js)
     at runInvalidTestCase (apps/oxlint/dist/index.js)
+    at apps/oxlint/dist/index.js
 
 
 #### no-implicit-globals > invalid
@@ -7147,8 +6568,8 @@ AssertionError [ERR_ASSERTION]: Should have no errors but had 1: [
 
 ### `no-obj-calls`
 
-Pass: 101 / 107 (94.4%)
-Fail: 6 / 107 (5.6%)
+Pass: 105 / 107 (98.1%)
+Fail: 2 / 107 (1.9%)
 Skip: 0 / 107 (0.0%)
 
 #### no-obj-calls > valid
@@ -7214,122 +6635,6 @@ AssertionError [ERR_ASSERTION]: Should have no errors but had 1: [
     at assertErrorCountIsCorrect (apps/oxlint/dist/index.js)
     at assertValidTestCasePasses (apps/oxlint/dist/index.js)
     at runValidTestCase (apps/oxlint/dist/index.js)
-    at apps/oxlint/dist/index.js
-
-
-#### no-obj-calls > invalid
-
-```js
-/*globals Reflect: true*/ Reflect();
-```
-
-```json
-{
-  "errors": [
-    {
-      "messageId": "unexpectedCall",
-      "data": {
-        "name": "Reflect"
-      }
-    }
-  ]
-}
-```
-
-AssertionError [ERR_ASSERTION]: Should have 1 error but had 0: []
-
-0 !== 1
-
-    at assertErrorCountIsCorrect (apps/oxlint/dist/index.js)
-    at assertInvalidTestCasePasses (apps/oxlint/dist/index.js)
-    at runInvalidTestCase (apps/oxlint/dist/index.js)
-    at apps/oxlint/dist/index.js
-
-
-#### no-obj-calls > invalid
-
-```js
-/*globals Reflect: true*/ new Reflect();
-```
-
-```json
-{
-  "errors": [
-    {
-      "messageId": "unexpectedCall",
-      "data": {
-        "name": "Reflect"
-      }
-    }
-  ]
-}
-```
-
-AssertionError [ERR_ASSERTION]: Should have 1 error but had 0: []
-
-0 !== 1
-
-    at assertErrorCountIsCorrect (apps/oxlint/dist/index.js)
-    at assertInvalidTestCasePasses (apps/oxlint/dist/index.js)
-    at runInvalidTestCase (apps/oxlint/dist/index.js)
-    at apps/oxlint/dist/index.js
-
-
-#### no-obj-calls > invalid
-
-```js
-/*globals Intl: true*/ Intl();
-```
-
-```json
-{
-  "errors": [
-    {
-      "messageId": "unexpectedCall",
-      "data": {
-        "name": "Intl"
-      }
-    }
-  ]
-}
-```
-
-AssertionError [ERR_ASSERTION]: Should have 1 error but had 0: []
-
-0 !== 1
-
-    at assertErrorCountIsCorrect (apps/oxlint/dist/index.js)
-    at assertInvalidTestCasePasses (apps/oxlint/dist/index.js)
-    at runInvalidTestCase (apps/oxlint/dist/index.js)
-    at apps/oxlint/dist/index.js
-
-
-#### no-obj-calls > invalid
-
-```js
-/*globals Intl: true*/ new Intl();
-```
-
-```json
-{
-  "errors": [
-    {
-      "messageId": "unexpectedCall",
-      "data": {
-        "name": "Intl"
-      }
-    }
-  ]
-}
-```
-
-AssertionError [ERR_ASSERTION]: Should have 1 error but had 0: []
-
-0 !== 1
-
-    at assertErrorCountIsCorrect (apps/oxlint/dist/index.js)
-    at assertInvalidTestCasePasses (apps/oxlint/dist/index.js)
-    at runInvalidTestCase (apps/oxlint/dist/index.js)
     at apps/oxlint/dist/index.js
 
 
@@ -11987,42 +11292,9 @@ AssertionError [ERR_ASSERTION]: Should have 1 error but had 0: []
 
 ### `no-undef`
 
-Pass: 88 / 94 (93.6%)
-Fail: 6 / 94 (6.4%)
+Pass: 93 / 94 (98.9%)
+Fail: 1 / 94 (1.1%)
 Skip: 0 / 94 (0.0%)
-
-#### no-undef > valid
-
-```js
-/*global b*/ function f() { b; }
-```
-
-```json
-{}
-```
-
-AssertionError [ERR_ASSERTION]: Should have no errors but had 1: [
-  {
-    ruleId: 'rule-to-test/no-undef',
-    message: "'b' is not defined.",
-    messageId: 'undef',
-    severity: 1,
-    nodeType: 'Identifier',
-    line: 1,
-    column: 28,
-    endLine: 1,
-    endColumn: 29,
-    suggestions: null
-  }
-]
-
-1 !== 0
-
-    at assertErrorCountIsCorrect (apps/oxlint/dist/index.js)
-    at assertValidTestCasePasses (apps/oxlint/dist/index.js)
-    at runValidTestCase (apps/oxlint/dist/index.js)
-    at apps/oxlint/dist/index.js
-
 
 #### no-undef > valid
 
@@ -12074,138 +11346,6 @@ AssertionError [ERR_ASSERTION]: Should have no errors but had 3: [
 ]
 
 3 !== 0
-
-    at assertErrorCountIsCorrect (apps/oxlint/dist/index.js)
-    at assertValidTestCasePasses (apps/oxlint/dist/index.js)
-    at runValidTestCase (apps/oxlint/dist/index.js)
-    at apps/oxlint/dist/index.js
-
-
-#### no-undef > valid
-
-```js
-/*global b:true*/ b++;
-```
-
-```json
-{}
-```
-
-AssertionError [ERR_ASSERTION]: Should have no errors but had 1: [
-  {
-    ruleId: 'rule-to-test/no-undef',
-    message: "'b' is not defined.",
-    messageId: 'undef',
-    severity: 1,
-    nodeType: 'Identifier',
-    line: 1,
-    column: 18,
-    endLine: 1,
-    endColumn: 19,
-    suggestions: null
-  }
-]
-
-1 !== 0
-
-    at assertErrorCountIsCorrect (apps/oxlint/dist/index.js)
-    at assertValidTestCasePasses (apps/oxlint/dist/index.js)
-    at runValidTestCase (apps/oxlint/dist/index.js)
-    at apps/oxlint/dist/index.js
-
-
-#### no-undef > valid
-
-```js
-/*global b:false*/ function f() { b = 1; }
-```
-
-```json
-{}
-```
-
-AssertionError [ERR_ASSERTION]: Should have no errors but had 1: [
-  {
-    ruleId: 'rule-to-test/no-undef',
-    message: "'b' is not defined.",
-    messageId: 'undef',
-    severity: 1,
-    nodeType: 'Identifier',
-    line: 1,
-    column: 34,
-    endLine: 1,
-    endColumn: 35,
-    suggestions: null
-  }
-]
-
-1 !== 0
-
-    at assertErrorCountIsCorrect (apps/oxlint/dist/index.js)
-    at assertValidTestCasePasses (apps/oxlint/dist/index.js)
-    at runValidTestCase (apps/oxlint/dist/index.js)
-    at apps/oxlint/dist/index.js
-
-
-#### no-undef > valid
-
-```js
-/*global b:false*/ function f() { b++; }
-```
-
-```json
-{}
-```
-
-AssertionError [ERR_ASSERTION]: Should have no errors but had 1: [
-  {
-    ruleId: 'rule-to-test/no-undef',
-    message: "'b' is not defined.",
-    messageId: 'undef',
-    severity: 1,
-    nodeType: 'Identifier',
-    line: 1,
-    column: 34,
-    endLine: 1,
-    endColumn: 35,
-    suggestions: null
-  }
-]
-
-1 !== 0
-
-    at assertErrorCountIsCorrect (apps/oxlint/dist/index.js)
-    at assertValidTestCasePasses (apps/oxlint/dist/index.js)
-    at runValidTestCase (apps/oxlint/dist/index.js)
-    at apps/oxlint/dist/index.js
-
-
-#### no-undef > valid
-
-```js
-/*global b*/ b = 1;
-```
-
-```json
-{}
-```
-
-AssertionError [ERR_ASSERTION]: Should have no errors but had 1: [
-  {
-    ruleId: 'rule-to-test/no-undef',
-    message: "'b' is not defined.",
-    messageId: 'undef',
-    severity: 1,
-    nodeType: 'Identifier',
-    line: 1,
-    column: 13,
-    endLine: 1,
-    endColumn: 14,
-    suggestions: null
-  }
-]
-
-1 !== 0
 
     at assertErrorCountIsCorrect (apps/oxlint/dist/index.js)
     at assertValidTestCasePasses (apps/oxlint/dist/index.js)
