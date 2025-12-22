@@ -251,24 +251,78 @@ When these globals are disabled, the rule should not apply or should handle them
 
 ---
 
-## Summary of Patterns Found
+## Summary of Patterns Found (Updated 2024-12-22)
 
-After investigating 50+ failing rules, the following patterns emerge (roughly in order of impact):
+After comprehensive analysis of all 289 failing tests across 36 rules:
 
-### 1. Global Scope Handling Issues (MOST COMMON)
+### 1. ESLint Variable Properties Not Set (~80+ tests) - HIGHEST IMPACT
 
 **Symptoms**:
 
-- `languageOptions.globals.X: "off"` not respected
-- Rules still flag code involving disabled globals
+- `/*global foo:writable*/ var foo = 1;` still flagged by `no-implicit-globals`
+- `/* exported foo */ var foo;` still flagged by `no-unused-vars`
 
-**Affected rules**: `no-setter-return`, `prefer-exponentiation-operator`, `prefer-regex-literals`, and others with
-"global scope" in their failure notes.
+**Affected rules**: `no-implicit-globals` (~50-60), `no-unused-vars` (29), others
 
-**Root cause**: Oxlint doesn't respect `globals` configuration that disables built-in globals via inline comments
-like `/* globals X:off */`.
+**Root cause**: When adding globals to scope manager, ESLint sets special properties on Variable objects:
 
-### 2. `globalThis.X` Not Recognized
+- `variable.writeable` - boolean for writable globals
+- `variable.eslintExported` - boolean for exported variables
+- `variable.eslintExplicitGlobal` - boolean for inline comment globals
+
+My inline globals fix adds variables but doesn't set these properties. Rules check these properties.
+
+### 2. `impliedStrict` Option Not Handled (~48 tests)
+
+**Symptoms**:
+
+- `scope.isStrict` is false when `parserOptions.ecmaFeatures.impliedStrict: true`
+- Rules incorrectly flag `this` usage in strict mode
+
+**Affected rules**: `no-invalid-this` (38), `strict` (10)
+
+**Root cause**: The `impliedStrict` parser option is not passed to typescript-eslint's scope analyzer.
+When `impliedStrict: true`, code should be treated as if in strict mode.
+
+### 3. `builtinGlobals` Option Not Working (~35 tests)
+
+**Symptoms**:
+
+- `var Object = 0;` with `builtinGlobals: true` not flagged
+- Rules can't detect when local vars shadow built-in globals
+
+**Affected rules**: `no-redeclare` (25), `no-shadow` (10)
+
+**Root cause**: The `builtinGlobals` option tells rules to check if local variables shadow built-in globals.
+This requires comparing against a list of globals marked as "builtin" which isn't available.
+
+### 4. RangeError in Location Handling (~15 tests)
+
+**Symptoms**:
+
+- `RangeError: Invalid column number (column -1 requested)`
+- `RangeError: Line number out of range`
+
+**Affected rules**: `func-call-spacing` (14), `no-multiple-empty-lines` (1)
+
+**Root cause**: `context.report` / `getOffsetFromLineColumn` doesn't handle edge cases:
+
+- Column computed to negative number (token position differences)
+- Line number past EOF
+
+### 5. `globalReturn`/`commonjs` Scope Wrapping (~8 tests)
+
+**Symptoms**:
+
+- `var foo;` with `globalReturn: true` incorrectly flagged as global scope
+- `sourceType: "commonjs"` treated same as `"script"`
+
+**Affected rules**: `no-implicit-globals` (~4-8)
+
+**Root cause**: `analyzeOptions.globalReturn` is hardcoded to `false` in scope.ts. When true,
+code should be analyzed as if wrapped in a function (Node.js module behavior).
+
+### 6. `globalThis.X` Not Recognized (~3 tests)
 
 **Symptoms**:
 
@@ -279,86 +333,13 @@ like `/* globals X:off */`.
 
 **Root cause**: Oxlint's scope analysis doesn't recognize `globalThis.X` as equivalent to the global `X`.
 
-### 3. Line/Column Number Handling Errors
+### Other Issues (Lower Impact)
 
-**Symptoms**:
-
-- `RangeError: Line number out of range` when reporting on line past EOF
-- `RangeError: Invalid column number (column -1 requested)`
-
-**Affected rules**: `no-multiple-empty-lines`, `func-call-spacing`
-
-**Root cause**: Oxlint's `context.report` / loc-to-offset conversion doesn't handle:
-
-- Line numbers past EOF
-- Column numbers computed from token positions that differ between ESLint and Oxlint
-
-### 4. `eslint-disable-next-line` Not Working
-
-**Symptoms**:
-
-- Disable comment doesn't suppress error on next line
-
-**Affected rules**: `no-fallthrough`
-
-**Root cause**: Issue with disable comment processing.
-
-### 5. BOM Handling Issues
-
-**Symptoms**:
-
-- `sourceCode.lines[0]` includes BOM but `sourceCode.getText()` doesn't
-- OR vice versa - inconsistent BOM handling
-
-**Affected rules**: `no-irregular-whitespace`, `unicode-bom`
-
-**Root cause**: Oxlint's BOM handling is inconsistent with ESLint's. ESLint strips BOM from `lines` but makes
-it available for rules that need it (like `unicode-bom`).
-
-### 6. Inline `/*eslint rule: config */` Comments Not Processed
-
-**Symptoms**:
-
-- Test expects errors from rules enabled via inline comments
-- Oxlint doesn't enable/configure rules via inline comments
-
-**Affected rules**: `comma-dangle`, `semi`
-
-**Root cause**: Oxlint's plugin system doesn't process inline `/*eslint rule: config */` comments.
-
-### 7. Inline `/* exported */` Comments Not Processed
-
-**Symptoms**:
-
-- `/* exported foo */` comment doesn't mark variable as exported
-
-**Affected rules**: `no-useless-assignment`, `prefer-const`
-
-**Root cause**: Oxlint doesn't process inline `/* exported */` directive comments.
-
-**Note**: Inline `/* global */` and `/* globals */` comments are now processed (fixed 2024-12-22).
-
-### 8. HTML Comments in Script Mode
-
-**Symptoms**:
-
-- `tokensAndComments is not correctly ordered` error
-- Occurs when code contains HTML comment syntax (`<!--` / `-->`) in script mode
-
-**Affected rules**: `prefer-object-spread`
-
-**Root cause**: Oxlint's tokenization of HTML comments in script mode differs from ESLint's.
-
-### 9. Parsing Edge Cases (`let` as Identifier)
-
-**Symptoms**:
-
-- Code like `(let[a] = b)` is parsed differently
-- Special disambiguation rules for `let` as identifier not applied
-
-**Affected rules**: `no-extra-parens`
-
-**Root cause**: Tokenization/parsing differences when `let` is used as an identifier in ES5 mode.
+- **`eslint-disable-next-line` not working** (~2 tests) - `no-fallthrough`, `no-restricted-imports`
+- **BOM handling issues** (~4 tests) - `unicode-bom`, `no-irregular-whitespace`
+- **Inline `/*eslint rule: config */` not processed** (~3 tests) - `comma-dangle`, `semi`
+- **HTML comments in script mode** (~1 test) - `prefer-object-spread`
+- **`let` as identifier parsing** (~4 tests) - `no-extra-parens`
 
 ---
 
