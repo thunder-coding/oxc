@@ -14,7 +14,6 @@ import type {
   Scope as TSScope,
 } from "@typescript-eslint/scope-manager";
 import type { Writable } from "type-fest";
-import type { Globals } from "./globals.ts";
 import type * as ESTree from "../generated/types.d.ts";
 import type { SetNullable } from "../utils/types.ts";
 
@@ -103,8 +102,13 @@ let tsScopeManager: TSESLintScopeManager | null = null;
 // Matches the directive label (global or globals) at the start of the comment.
 const GLOBAL_DIRECTIVE_REGEX = /^(globals?)\s+(.+)$/s;
 
-// Regex to parse individual global entries: `name` or `name: value` or `name:value`
-const GLOBAL_ENTRY_REGEX = /^\s*([a-zA-Z_$][\w$]*)\s*(?::\s*(\S+))?\s*$/;
+// Regex to match `/* exported */` directive comments.
+// Matches variable names that are exported and should be considered "used".
+const EXPORTED_DIRECTIVE_REGEX = /^exported\s+(.+)$/s;
+
+// Regex to parse individual global/exported entries: `name` or `name: value` or `name:value`
+// Uses Unicode property escapes to match Unicode identifiers (ES2018+)
+const GLOBAL_ENTRY_REGEX = /^\s*([\p{ID_Start}$_][\p{ID_Continue}$]*)\s*(?::\s*(\S+))?\s*$/u;
 
 // Options for TS-ESLint's `analyze` method.
 // `sourceType` property is set before calling `analyze`.
@@ -242,10 +246,21 @@ function addGlobals(): void {
   // and create variables for globals defined in them.
   const inlineGlobals = parseInlineGlobalComments();
   for (const name in inlineGlobals) {
-    const value = inlineGlobals[name];
+    const { value, comments } = inlineGlobals[name];
     if (value !== "off") {
       // Inline globals have `eslintExplicitGlobal = true`, no `eslintImplicitGlobalSetting`
-      createGlobalVariable(name, globalScope, value === "writable", undefined, true);
+      createGlobalVariable(name, globalScope, value === "writable", undefined, true, comments);
+    }
+  }
+
+  // Parse inline `/* exported */` directive comments and mark those variables as used.
+  const exportedVars = parseInlineExportedComments();
+  for (const name of exportedVars) {
+    const variable = globalScope.set.get(name);
+    if (variable) {
+      variable.eslintUsed = true;
+      // @ts-expect-error - not present in types
+      variable.eslintExported = true;
     }
   }
 
@@ -289,6 +304,7 @@ function addGlobals(): void {
  * @param isWritable - `true` if the variable is writable, `false` otherwise
  * @param implicitSetting - The config value for eslintImplicitGlobalSetting (for config/env globals)
  * @param isExplicit - Whether this global was defined by an inline global directive comment
+ * @param explicitComments - Comment nodes that defined this global (for inline globals)
  */
 function createGlobalVariable(
   name: string,
@@ -296,6 +312,7 @@ function createGlobalVariable(
   isWritable: boolean,
   implicitSetting?: "readonly" | "writable",
   isExplicit?: boolean,
+  explicitComments?: ESTree.Comment[],
 ): void {
   // Check if variable already exists (from code declarations or previous envs).
   let variable = globalScope.set.get(name);
@@ -325,6 +342,17 @@ function createGlobalVariable(
   variable.eslintImplicitGlobalSetting = implicitSetting;
   // @ts-expect-error - not present in types
   variable.eslintExplicitGlobal = isExplicit ?? false;
+  // @ts-expect-error - not present in types
+  if (explicitComments) variable.eslintExplicitGlobalComments = explicitComments;
+}
+
+/**
+ * Result of parsing inline global comments.
+ * Maps variable names to their settings and the comments that defined them.
+ */
+interface InlineGlobalInfo {
+  value: "readonly" | "writable" | "off";
+  comments: ESTree.Comment[];
 }
 
 /**
@@ -333,12 +361,12 @@ function createGlobalVariable(
  * ESLint processes these comments to add globals that supplement the configuration.
  * Format: `/* global name1, name2: writable, name3: off * /`
  *
- * @returns Object mapping global names to their settings ("readonly", "writable", or "off")
+ * @returns Object mapping global names to their settings and defining comments
  */
-function parseInlineGlobalComments(): Globals {
+function parseInlineGlobalComments(): Record<string, InlineGlobalInfo> {
   debugAssertIsNonNull(ast);
 
-  const result: Globals = {};
+  const result: Record<string, InlineGlobalInfo> = {};
   const { comments } = ast;
 
   for (let i = 0, len = comments.length; i < len; i++) {
@@ -360,7 +388,54 @@ function parseInlineGlobalComments(): Globals {
 
       const name = entryMatch[1];
       const value = normalizeGlobalValue(entryMatch[2]);
-      result[name] = value;
+
+      // Track the comment(s) that defined this global
+      if (result[name]) {
+        result[name].comments.push(comment);
+        // Use last value if defined multiple times
+        result[name].value = value;
+      } else {
+        result[name] = { value, comments: [comment] };
+      }
+    }
+  }
+
+  return result;
+}
+
+/**
+ * Parse inline `/* exported * /` directive comments from source code.
+ *
+ * The `exported` directive marks variables as "used" so they won't be reported by `no-unused-vars`.
+ * Format: `/* exported name1, name2, name3 * /`
+ *
+ * @returns Set of variable names that are marked as exported
+ */
+function parseInlineExportedComments(): Set<string> {
+  debugAssertIsNonNull(ast);
+
+  const result = new Set<string>();
+  const { comments } = ast;
+
+  for (let i = 0, len = comments.length; i < len; i++) {
+    const comment = comments[i];
+    // Only process block comments (/* ... */)
+    if (comment.type !== "Block") continue;
+
+    const text = comment.value.trim();
+    const match = EXPORTED_DIRECTIVE_REGEX.exec(text);
+    if (!match) continue;
+
+    // Parse the exported list (everything after "exported")
+    const exportedText = match[1];
+    const entries = exportedText.split(",");
+
+    for (let j = 0, entriesLen = entries.length; j < entriesLen; j++) {
+      const name = entries[j].trim();
+      // Validate it's a valid identifier (using Unicode property escapes for Unicode support)
+      if (/^[\p{ID_Start}$_][\p{ID_Continue}$]*$/u.test(name)) {
+        result.add(name);
+      }
     }
   }
 
