@@ -2,7 +2,7 @@
 
 ## The task
 
-We're trying to make Oxlint JS plugins pass all ESLint's tests. We're on about 97% passing, but still 800 tests failing.
+We're trying to make Oxlint JS plugins pass all ESLint's tests. We're on about 99% passing, but still ~300 tests failing.
 
 To do this, we're:
 
@@ -60,75 +60,46 @@ Consult the TODO list, and continue onwards.
 
 Go, Claude, go!
 
-### One note
-
-I suspect that many of the test cases are failing due to problems with Oxlint not handling global scope correctly.
-That is a known problem, which I've not tackled yet. Don't spend too much time on cases which appear to be failing
-due to that.
-
-I am particularly interested in test case which are failing for _other_ reasons.
-
 ## TODO list
 
 Rules to investigate (picking one simple case from each, starting with rules with fewer failures):
 
 - [x] `comma-dangle` (2 failures) - TEST HARNESS ISSUE (custom plugin reference)
-- [x] `no-array-constructor` (1 failure) - GLOBAL SCOPE (globals.Array: "off")
-- [x] `no-constant-condition` (2 failures) - `reference.resolved` is null for `undefined`
 - [x] `no-extra-parens` (4 failures) - parsing/token differences with `let` as identifier
 - [x] `no-fallthrough` (1 failure) - `eslint-disable-next-line` not respected
 - [x] `no-irregular-whitespace` (1 failure) - `sourceCode.lines` includes BOM
-- [x] `no-lone-blocks` (1 failure) - could not reproduce, possibly `impliedStrict`
+- [ ] `no-lone-blocks` (1 failure) - could not reproduce, possibly `impliedStrict`
 - [x] `no-multiple-empty-lines` (1 failure) - `context.report` fails on line past EOF
-- [x] `no-object-constructor` (1 failure) - GLOBAL SCOPE (globals.Object: "off")
 - [x] `no-restricted-imports` (1 failure) - `eslint-disable-line` not respected
-- [x] `no-setter-return` (3 failures) - GLOBAL SCOPE (globals.Reflect/Object: "off")
-- [x] `no-shadow-restricted-names` (1 failure) - could not reproduce in tester
-- [x] `no-useless-assignment` (2 failures) - `/* exported */` and inline eslint config not processed
-- [x] `no-useless-backreference` (2 failures) - GLOBAL SCOPE (globals.RegExp: "off")
-- [x] `prefer-const` (2 failures) - `/* exported */` and `/*eslint rule: config*/` not processed
-- [x] `prefer-exponentiation-operator` (3 failures) - GLOBAL SCOPE + `globalThis.Math` not recognized
-- [x] `prefer-named-capture-group` (3 failures) - `globalThis.RegExp` not recognized
-- [x] `prefer-object-has-own` (1 failure) - `/* global Object: off */` inline not processed
-- [x] `prefer-object-spread` (5 failures) - HTML comments + `globalThis.Object` not recognized
-- [x] `prefer-regex-literals` (12 failures) - GLOBAL SCOPE (globals.String/RegExp: "off")
-- [x] `require-atomic-updates` (1 failure) - global scope (readonly globals not handled)
-- [x] `require-unicode-regexp` (3 failures) - `window.X`/`global.X`/`globalThis.X` not recognized
+- [ ] `no-setter-return` (1 failure) - GLOBAL SCOPE (globals.Reflect/Object: "off")
+- [ ] `no-useless-assignment` (2 failures) - `/* exported */` and inline eslint config not processed
+- [ ] `no-useless-backreference` (1 failure) - GLOBAL SCOPE (globals.RegExp: "off")
+- [ ] `prefer-const` (2 failures) - `/* exported */` and `/*eslint rule: config*/` not processed
+- [ ] `prefer-exponentiation-operator` (1 failure) - `globalThis.Math` not recognized
+- [ ] `prefer-object-has-own` (1 failure) - `/* global Object: off */` inline not processed
+- [ ] `prefer-object-spread` (1 failure) - HTML comments or `globalThis.Object` not recognized
+- [ ] `prefer-regex-literals` (2 failures) - GLOBAL SCOPE (globals.String/RegExp: "off")
 - [x] `semi` (1 failure) - inline `/*eslint rule: config */` not processed
-- [x] `valid-typeof` (1 failure) - GLOBAL SCOPE (`undefined` not recognized)
 - [x] `unicode-bom` (3 failures) - BOM stripped before rules see it
-- [x] `symbol-description` (2 failures) - global variable references not populated
-- [x] `block-scoped-var` (9 failures) - could not reproduce in tester
-- [x] `camelcase` (17 failures) - `ignoreGlobals` option doesn't work (globals not recognized)
-- [x] `consistent-this` (3 failures) - could not reproduce in tester
 - [x] `func-call-spacing` (14 failures) - `RangeError: Invalid column number (-1)` - invalid loc
-- [x] `id-blacklist` (11 failures) - global references not recognized (same as id-denylist)
-- [x] `id-denylist` (11 failures) - global references not recognized (`undefined` not recognized as global)
-- [x] `logical-assignment-operators` (13 failures) - `undefined` comparison not recognized
-- [x] `no-alert` (6 failures) - local shadowing of global not recognized
-- [x] `no-constant-binary-expression` (35 failures) - `undefined` not recognized as constant
-- [x] `no-eval` (25 failures) - `this.eval()` handling with `impliedStrict`/`globalReturn`
-- [x] `no-global-assign` (6 failures) - browser/CommonJS globals not recognized
-- [x] `no-implicit-globals` (92 failures) - global scope handling
-- [x] `no-implied-eval` (55 failures) - likely global scope (setTimeout/setInterval)
-- [x] `no-invalid-this` (42 failures) - `this` context analysis
-- [x] `no-misleading-character-class` (5 failures) - needs investigation
-- [x] `no-native-reassign` (6 failures) - global scope (same as no-global-assign)
-- [x] `no-new-native-nonconstructor` (2 failures) - global `Symbol` not recognized
-- [x] `no-new-symbol` (2 failures) - global `Symbol` references not linked
-- [x] `no-new-wrappers` (2 failures) - global scope (String/Number not recognized)
-- [x] `no-obj-calls` (34 failures) - global scope (Math/JSON/Reflect not recognized)
-- [x] `no-promise-executor-return` (58 failures) - needs investigation
-- [x] `no-redeclare` (24 failures) - global scope handling
-- [x] `no-restricted-globals` (23 failures) - global scope handling
-- [x] `no-shadow` (8 failures) - global scope (builtinGlobals option)
-- [x] `no-undef` (40 failures) - global scope handling
-- [x] `no-undefined` (16 failures) - `undefined` handling
-- [x] `no-unused-expressions` (4 failures) - needs investigation
-- [x] `no-unused-vars` (96 failures) - global scope / variable reference handling
-- [x] `no-use-before-define` (24 failures) - global scope / TDZ handling
-- [x] `radix` (21 failures) - global `parseInt` not recognized
-- [x] `strict` (20 failures) - strict mode detection
+- [ ] `id-blacklist` (3 failures) - global references not recognized (same as id-denylist)
+- [ ] `id-denylist` (3 failures) - global references not recognized (`undefined` not recognized as global)
+- [ ] `no-eval` (4 failures) - `this.eval()` handling with `impliedStrict`/`globalReturn`
+- [ ] `no-global-assign` (10 failures) - browser/CommonJS globals not recognized
+- [ ] `no-implicit-globals` (93 failures) - global scope handling
+- [ ] `no-invalid-this` (42 failures) - `this` context analysis
+- [ ] `no-native-reassign` (10 failures) - global scope (same as no-global-assign)
+- [ ] `no-new-wrappers` (1 failure) - global scope (String/Number not recognized)
+- [ ] `no-obj-calls` (6 failures) - global scope (Math/JSON/Reflect not recognized)
+- [ ] `no-promise-executor-return` (1 failure) - needs investigation
+- [ ] `no-redeclare` (25 failures) - global scope handling
+- [ ] `no-shadow` (10 failures) - global scope (builtinGlobals option)
+- [ ] `no-undef` (6 failures) - global scope handling
+- [ ] `no-unused-expressions` (4 failures) - needs investigation
+- [ ] `no-unused-vars` (29 failures) - global scope / variable reference handling
+- [ ] `no-use-before-define` (1 failure) - global scope / TDZ handling
+- [ ] `radix` (1 failure) - global `parseInt` not recognized
+- [ ] `strict` (20 failures) - strict mode detection
 
 ## Findings
 
@@ -141,19 +112,6 @@ plugin rule. ESLint expects 2 errors (one from comma-dangle + one from this cust
 about the custom rule so only produces 1 error.
 
 **Verdict**: These tests should be skipped or the expected error count should be adjusted for Oxlint testing.
-
----
-
-### `no-array-constructor` (1 failure)
-
-**Cause**: Global scope handling issue
-
-Test case: `new Array()` with `languageOptions.globals.Array: "off"`.
-
-When `Array` is disabled in globals, ESLint considers `new Array()` valid (the rule only applies to the builtin
-`Array`). Oxlint doesn't respect this global configuration.
-
-**Verdict**: Known global scope handling issue - Oxlint doesn't handle `globals` configuration to disable builtins.
 
 ---
 
@@ -269,16 +227,6 @@ The rule checks for `Math.pow` but Oxlint doesn't recognize `globalThis.Math.pow
 
 ---
 
-### `prefer-named-capture-group` (3 failures)
-
-**Cause**: Same as `prefer-exponentiation-operator` - `globalThis.RegExp` not recognized
-
-All 3 failing tests use `globalThis.RegExp(...)` which should be recognized as `RegExp(...)`.
-
-**Verdict**: Same issue - Oxlint doesn't recognize `globalThis.X` as the global `X`.
-
----
-
 ### `prefer-regex-literals` (12 failures)
 
 **Cause**: Global scope issues - `globals.String: "off"` and `globals.RegExp: "off"` not respected
@@ -305,10 +253,11 @@ After investigating 50+ failing rules, the following patterns emerge (roughly in
 - `languageOptions.globals.X: "off"` not respected
 - Rules still flag code involving disabled globals
 
-**Affected rules**: `no-array-constructor`, `no-constant-condition`, `no-setter-return`, `prefer-exponentiation-operator`,
-`prefer-regex-literals`, and likely many more with "global scope" in their failure notes.
+**Affected rules**: `no-setter-return`, `prefer-exponentiation-operator`, `prefer-regex-literals`, and others with
+"global scope" in their failure notes.
 
-**Root cause**: Oxlint's scope analysis doesn't respect the `globals` configuration that disables built-in globals.
+**Root cause**: Oxlint doesn't respect `globals` configuration that disables built-in globals via inline comments
+like `/* globals X:off */`.
 
 ### 2. `globalThis.X` Not Recognized
 
@@ -317,7 +266,7 @@ After investigating 50+ failing rules, the following patterns emerge (roughly in
 - `globalThis.Math.pow(...)` not recognized as `Math.pow(...)`
 - `globalThis.RegExp(...)` not recognized as `RegExp(...)`
 
-**Affected rules**: `prefer-exponentiation-operator`, `prefer-named-capture-group`
+**Affected rules**: `prefer-exponentiation-operator`
 
 **Root cause**: Oxlint's scope analysis doesn't recognize `globalThis.X` as equivalent to the global `X`.
 
@@ -368,22 +317,7 @@ it available for rules that need it (like `unicode-bom`).
 
 **Root cause**: Oxlint's plugin system doesn't process inline `/*eslint rule: config */` comments.
 
-### 7. Global Variable References Not Linked
-
-**Symptoms**:
-
-- Global variables exist in scope (e.g., `Symbol`, `undefined`)
-- But `variable.references` array is empty OR `reference.resolved` is null
-- Rules can't find references to built-in globals
-
-**Affected rules**: `symbol-description`, `no-constant-condition`
-
-**Root cause**: Two sides of the same issue:
-
-- From local scope: References exist but `reference.resolved` is null (not linked to global)
-- From global scope: Variable exists but `variable.references` is empty (references not linked back)
-
-### 8. Inline `/* exported */` and `/* global */` Comments Not Processed
+### 7. Inline `/* exported */` and `/* global */` Comments Not Processed
 
 **Symptoms**:
 
@@ -395,7 +329,7 @@ it available for rules that need it (like `unicode-bom`).
 
 **Root cause**: Oxlint doesn't process inline directive comments that modify scope/globals.
 
-### 9. HTML Comments in Script Mode
+### 8. HTML Comments in Script Mode
 
 **Symptoms**:
 
@@ -406,18 +340,7 @@ it available for rules that need it (like `unicode-bom`).
 
 **Root cause**: Oxlint's tokenization of HTML comments in script mode differs from ESLint's.
 
-### 10. Local Variable Shadowing Not Recognized
-
-**Symptoms**:
-
-- When a local variable shadows a global (e.g., `var alert = function(){}`), the rule still flags the local usage
-- Rules can't distinguish between global and shadowing local
-
-**Affected rules**: `no-alert`
-
-**Root cause**: Scope resolution issue - rules can't determine if an identifier refers to a global or a local shadow.
-
-### 11. Parsing Edge Cases (`let` as Identifier)
+### 9. Parsing Edge Cases (`let` as Identifier)
 
 **Symptoms**:
 
@@ -469,41 +392,6 @@ The rule uses `sourceCode.getText().charCodeAt(0)` to check for BOM. Since Oxlin
 
 ---
 
-### `valid-typeof` (1 failure)
-
-**Cause**: Likely global scope issue - `undefined` identifier not recognized
-
-Test: `if (typeof bar !== undefined) {}`
-
-The rule should flag comparing `typeof` result against the `undefined` identifier (should use `"undefined"` string).
-Oxlint doesn't report this, possibly because it doesn't recognize `undefined` as the global `undefined` value.
-
-**Verdict**: Likely global scope issue - rule needs to identify global `undefined`.
-
----
-
-### `no-constant-condition` (2 failures)
-
-**Causes**:
-
-1. `globals.Boolean: "off"` not respected - global scope issue (same pattern)
-2. `undefined` identifier not recognized as constant
-
-**Key finding for test case 2**: `if (undefined) {}`
-
-The rule uses `isReferenceToGlobalVariable()` which checks `scope.references` to find the reference and then
-checks `reference.resolved`.
-
-- **ESLint**: `reference.resolved: true`, `scope.type: "global"`, `defs.length: 0` → recognized as constant
-- **Oxlint**: `reference.resolved: false` → NOT recognized as constant
-
-**Root cause**: Oxlint finds the `undefined` reference in `scope.references` but does not resolve it to the global
-`undefined` variable. `reference.resolved` is `null`/falsy in Oxlint's scope analysis.
-
-**Verdict**: Scope resolution issue - references to built-in globals like `undefined` are not being resolved.
-
----
-
 ### `no-extra-parens` (4 failures)
 
 **Cause**: Parsing/tokenization differences with `let` used as an identifier
@@ -524,25 +412,3 @@ ESLint correctly marks these as not having excess parens, but Oxlint incorrectly
 `sourceCode.getTokenAfter()` or in AST structure.
 
 **Verdict**: Tokenization/parsing edge case - needs investigation into how Oxlint parses/tokenizes `let` as identifier.
-
----
-
-### `symbol-description` (2 failures)
-
-**Cause**: Global variable references array is empty
-
-Test case: `Symbol();`
-
-The rule uses `getVariableByName(scope, "Symbol")` to find the global Symbol, then iterates `variable.references` to find calls.
-
-- **ESLint**: Symbol found, `variable.references.length: 1`
-- **Oxlint**: Symbol found, `variable.references.length: 0`
-
-**Root cause**: Oxlint's scope analysis creates global variables (like `Symbol`) but doesn't populate their `references`
-array with the actual references from the code. The reference `Symbol()` should be linked to the global Symbol variable.
-
-**Verdict**: Scope analysis issue - global variable references are not being populated. This is related to the
-`reference.resolved` issue found in `no-constant-condition` but from the opposite direction:
-
-- `no-constant-condition`: Local scope has reference but `reference.resolved` is null
-- `symbol-description`: Global variable exists but `variable.references` is empty
