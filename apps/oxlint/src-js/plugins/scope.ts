@@ -166,28 +166,43 @@ function addGlobals(): void {
     for (let i = 0, len = readonly.length; i < len; i++) {
       const varName = readonly[i];
       // Skip vars that are defined in `globals`. They might be `"off"`.
-      if (!Object.hasOwn(globals, varName)) createGlobalVariable(varName, globalScope, false);
+      if (!Object.hasOwn(globals, varName)) {
+        createGlobalVariable(varName, globalScope, false, "readonly");
+      }
     }
 
     for (let i = 0, len = writable.length; i < len; i++) {
       const varName = writable[i];
       // Skip vars that are defined in `globals`. They might be `"off"`.
-      if (!Object.hasOwn(globals, varName)) createGlobalVariable(varName, globalScope, true);
+      if (!Object.hasOwn(globals, varName)) {
+        createGlobalVariable(varName, globalScope, true, "writable");
+      }
     }
   }
 
-  // Create variables for enabled `globals`.
+  // Create variables for enabled `globals` (from config).
   // `globals` from JSON, so we can use simple `for..in` loop.
   for (const name in globals) {
     const value = globals[name];
-    if (value !== "off") createGlobalVariable(name, globalScope, value === "writable");
+    if (value !== "off") {
+      createGlobalVariable(
+        name,
+        globalScope,
+        value === "writable",
+        value as "readonly" | "writable",
+      );
+    }
   }
 
   // Parse inline `/* global */` and `/* globals */` directive comments
   // and create variables for globals defined in them.
   const inlineGlobals = parseInlineGlobalComments();
   for (const name in inlineGlobals) {
-    if (inlineGlobals[name] !== "off") createGlobalVariable(name, globalScope);
+    const value = inlineGlobals[name];
+    if (value !== "off") {
+      // Inline globals have `eslintExplicitGlobal = true`, no `eslintImplicitGlobalSetting`
+      createGlobalVariable(name, globalScope, value === "writable", undefined, true);
+    }
   }
 
   // Resolve references from `through`
@@ -228,24 +243,44 @@ function addGlobals(): void {
  * @param name - Var name
  * @param globalScope - Global scope object
  * @param isWritable - `true` if the variable is writable, `false` otherwise
+ * @param implicitSetting - The config value for eslintImplicitGlobalSetting (for config/env globals)
+ * @param isExplicit - Whether this global was defined by an inline global directive comment
  */
-function createGlobalVariable(name: string, globalScope: TSScope, isWritable: boolean): void {
+function createGlobalVariable(
+  name: string,
+  globalScope: TSScope,
+  isWritable: boolean,
+  implicitSetting?: "readonly" | "writable",
+  isExplicit?: boolean,
+): void {
+  // Check if variable already exists (from code declarations or previous envs).
+  let variable = globalScope.set.get(name);
+
   // Skip vars that already exist in the scope.
   // These could be from code declarations or previous envs.
   // This is important because typescript-eslint's scope manager doesn't resolve references
   // in the global scope for `sourceType: "script"`, so we mustn't overwrite local `var`
   // declarations with globals of the same name.
-  if (globalScope.set.has(name)) return;
+  if (!variable) {
+    // Create new variable for this global.
+    // All globals are type + value.
+    variable = new TSVariable(name, globalScope);
+    debugAssert(variable.isTypeVariable, "variable should have isTypeVariable set by default");
+    debugAssert(variable.isValueVariable, "variable should have isValueVariable set by default");
+    globalScope.set.set(name, variable);
+    globalScope.variables.push(variable);
+  }
 
-  // All globals are type + value
-  const variable = new TSVariable(name, globalScope);
-  debugAssert(variable.isTypeVariable, "variable should have `isTypeVariable` set by default");
-  debugAssert(variable.isValueVariable, "variable should have `isValueVariable` set by default");
+  // Set ESLint-specific properties on the variable.
+  // These are used by rules like `no-redeclare` and `no-shadow` with `builtinGlobals` option.
+  // We set these even on existing variables (from code declarations) so rules can detect
+  // when code shadows a built-in global.
   // @ts-expect-error - not present in types
   variable.writeable = isWritable;
-
-  globalScope.set.set(name, variable);
-  globalScope.variables.push(variable);
+  // @ts-expect-error - not present in types
+  variable.eslintImplicitGlobalSetting = implicitSetting;
+  // @ts-expect-error - not present in types
+  variable.eslintExplicitGlobal = isExplicit ?? false;
 }
 
 /**
