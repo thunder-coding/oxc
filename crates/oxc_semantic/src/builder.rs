@@ -618,6 +618,7 @@ impl<'a> Visit<'a> for SemanticBuilder<'a> {
         self.create_ast_node(kind);
     }
 
+    #[inline(always)]
     fn leave_node(&mut self, kind: AstKind<'a>) {
         if self.check_syntax_error {
             checker::check(kind, self);

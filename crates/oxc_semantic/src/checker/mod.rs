@@ -9,6 +9,7 @@ use typescript as ts;
 
 pub use javascript::is_function_part_of_if_statement;
 
+#[inline(always)]
 pub fn check<'a>(kind: AstKind<'a>, ctx: &SemanticBuilder<'a>) {
     match kind {
         AstKind::Program(program) => {
