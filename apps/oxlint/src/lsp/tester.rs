@@ -42,8 +42,7 @@ fn get_snapshot_safe_uri(uri: &Uri) -> String {
     let mut safe_uri = uri.to_string();
     let start = safe_uri.find("file://").expect("file:// protocol not found in URI");
     let end = safe_uri.find("oxlint").expect("oxlint not found in URI");
-    safe_uri
-        .replace_range(start + "file://".len()..end + "oxlint".len(), "<variable>");
+    safe_uri.replace_range(start + "file://".len()..end + "oxlint".len(), "<variable>");
     safe_uri
 }
 
