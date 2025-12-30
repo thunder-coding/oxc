@@ -11,7 +11,11 @@ use oxc_span::{CompactStr, Span};
 use schemars::JsonSchema;
 use serde::Deserialize;
 
-use crate::{AstNode, context::LintContext, rule::{DefaultRuleConfig, Rule}};
+use crate::{
+    AstNode,
+    context::LintContext,
+    rule::{DefaultRuleConfig, Rule},
+};
 
 fn no_require_imports_diagnostic(span: Span) -> OxcDiagnostic {
     OxcDiagnostic::warn("Expected \"import\" statement instead of \"require\" call")
